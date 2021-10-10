@@ -1,6 +1,7 @@
+// ------------------- VARIABLES OF CONTROL --------------------
 // types of units available
 let units = ['lancer', 'archer', 'knight'];
-//dictionary unit type: [basePoints, trainingCost, trainingPoints, transformationCost]
+//dictionary unit type: [basePoints, trainingCost, trainingPoints, transformCost]
 let unitDict = {
   lancer: [5, 10, 3, 30],
   archer: [10, 20, 7, 40],
@@ -15,7 +16,7 @@ let armyDict = {
 // message list
 let message = {
   trainSucces: 'Unit trained successfully',
-  transformSucces: 'Unit transformed successfully',
+  transformSuccess: 'Unit transformed successfully',
   transformFail: 'Unit can not be transformed',
   insufficientGold: 'Insufficient Gold',
   battleWin: 'Battle won',
@@ -31,37 +32,38 @@ let unitsLostBattle = 2;
 
 let unitsTieBattle = 1;
 
+// ------------------- UNIT CLASS AND HIS CORRESPONDING METHODS --------------------
 class unit {
   constructor(type) {
     this.type = type;
-    this.bPoints = unitDict[this.type][0];
+    this.basePoints = unitDict[this.type][0];
     this.trainingCost = unitDict[this.type][1];
     this.trainingPoints = unitDict[this.type][2];
-    this.transCost = unitDict[this.type][3];
+    this.transformCost = unitDict[this.type][3];
     this.trainingPower = 0;
   }
   // method to calculate the total points of a single unit
   totalPoints() {
-    let points = this.bPoints + this.trainingPower;
+    let points = this.basePoints + this.trainingPower;
     return points;
   }
   // method to train a unit
   train() {
     this.trainingPower += this.trainingPoints;
   }
-  // method to transform a unit
+  // method to transform a unit it returns a boolean to check if succeded
   transform() {
     if (this.type != units[units.length - 1]) {
       this.type = units[units.indexOf(this.type) + 1];
-      this.bPoints = unitDict[this.type][0];
+      this.basePoints = unitDict[this.type][0];
       this.trainingCost = unitDict[this.type][1];
       this.trainingPoints = unitDict[this.type][2];
-      this.transCost = unitDict[this.type][3];
+      this.transformCost = unitDict[this.type][3];
       return true;
     } else return false;
   }
 }
-
+// ------------------- CIVILIZATION CLASS AND HIS CORRESPONDING METHODS --------------------
 class civilization {
   constructor(type) {
     this.type = type;
@@ -76,6 +78,7 @@ class civilization {
   }
   // method to train a unit based in his position in the army array
   unitTrain(unit) {
+    //verify if the the civilization have the gold required
     if (this.gold >= this.army[unit].trainingCost) {
       this.gold -= this.army[unit].trainingCost;
       this.army[unit].train();
@@ -84,10 +87,12 @@ class civilization {
   }
   // method to transform a unit based in his position in the army array
   unitTransform(unit) {
-    if (this.gold >= this.army[unit].transCost) {
-      this.gold -= this.army[unit].transCost;
+    //check if the civilization have the gold required
+    if (this.gold >= this.army[unit].transformCost) {
+      this.gold -= this.army[unit].transformCost;
+      //check if the transformation process was a success
       if (this.army[unit].transform()) {
-        return message.transformSucces;
+        return message.transformSuccess;
       } else return message.transformFail;
     } else return message.insufficientGold;
   }
@@ -137,7 +142,7 @@ class civilization {
       return message.battleTie;
     }
   }
-
+  // methods to control the result effects of the battle
   battleWin(rival) {
     this.gold += reward;
     this.battleHistory.push(message.battleWin + ` vs ${rival.type}`);
@@ -157,7 +162,7 @@ class civilization {
     this.battleHistory.push(message.battleTie + ` vs ${rival.type}`);
   }
 }
-
+// ------------------- CONSTANTS FOR TESTS IN CONSOLE --------------------
 const l = new unit('lancer');
 const a = new unit('archer');
 const k = new unit('knight');

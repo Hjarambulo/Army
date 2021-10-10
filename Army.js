@@ -20,8 +20,12 @@ let message = {
   battleLose: 'Batalla perdida',
   battleTie: 'Battalla empatada',
 };
-
+// types of units available
 let units = ['lancer', 'archer', 'knight'];
+// number of units lost in a lost and tie battle
+let unitsLostBattle = 2;
+
+let unitsTieBattle = 1;
 
 class unit {
   constructor(type) {
@@ -32,16 +36,16 @@ class unit {
     this.transCost = unitDict[this.type][3];
     this.trainingPower = 0;
   }
-
+  // metod to calculate the total points of a single unit
   totalPoints() {
     let points = this.bPoints + this.trainingPower;
     return points;
   }
-
+  // metod to train a unit
   train() {
     this.trainingPower += this.trainingPoints;
   }
-
+  // metod to transform a unit
   transform() {
     if (this.type != units[units.length - 1]) {
       this.type = units[units.indexOf(this.type) + 1];
@@ -66,7 +70,7 @@ class civilization {
       }
     }
   }
-
+  // metod to train a unit based in his position in the army array
   unitTrain(unit) {
     if (this.gold >= this.army[unit].trainingCost) {
       this.gold -= this.army[unit].trainingCost;
@@ -74,7 +78,7 @@ class civilization {
       return message.trainSucces;
     } else return message.insufficientGold;
   }
-
+  // metod to transform a unit based in his position in the army array
   unitTransform(unit) {
     if (this.gold >= this.army[unit].transCost) {
       this.gold -= this.army[unit].transCost;
@@ -83,13 +87,13 @@ class civilization {
       } else return message.transformFail;
     } else return message.insufficientGold;
   }
-
+  // metod to calculate the total power of the army
   totalPower() {
     let power = 0;
     this.army.forEach((unit) => (power += unit.totalPoints()));
     return power;
   }
-
+  // metod to search the stronger unit in the army array and remove it
   looseStrongerUnit() {
     let stronger = null;
     let maxPoints = 0;
@@ -101,7 +105,7 @@ class civilization {
     });
     this.army.splice(this.army.indexOf(stronger), 1);
   }
-
+  // metod to search the weakest unit in the army array and remove it
   looseWeakestUnit() {
     let weakest = null;
     let minPoints = Number.MAX_VALUE;
@@ -113,36 +117,37 @@ class civilization {
     });
     this.army.splice(this.army.indexOf(weakest), 1);
   }
-
-  battle(civil2) {
-    if (this.totalPower() != civil2.totalPower()) {
-      if (this.totalPower() > civil2.totalPower()) {
-        this.battleWin();
-        civil2.battleLose();
-      } else {
-        this.battleLose();
-        civil2.battleWin();
-      }
+  // metod in charge of the battle between civilizations
+  battle(defender) {
+    if (this.totalPower() > defender.totalPower()) {
+      this.battleWin(defender);
+      defender.battleLose(this);
+    } else if (this.totalPower() < defender.totalPower()) {
+      this.battleLose(defender);
+      defender.battleWin(this);
     } else {
-      this.battleTie(civil2);
+      this.battleTie(defender);
+      defender.battleTie(this);
     }
   }
 
-  battleWin() {
+  battleWin(rival) {
     this.gold += 100;
-    this.battleHistory.push(message.battleWin);
+    this.battleHistory.push(message.battleWin + ` vs ${rival.type}`);
   }
 
-  battleLose() {
-    this.looseStrongerUnit();
-    this.battleHistory.push(message.battleLose);
+  battleLose(rival) {
+    for (let i = 0; i < unitsLostBattle; i++) {
+      this.looseStrongerUnit();
+    }
+    this.battleHistory.push(message.battleLose + ` vs ${rival.type}`);
   }
 
-  battleTie(civil2) {
-    this.looseWeakestUnit();
-    this.battleHistory.push(message.battleTie);
-    civil2.looseWeakestUnit();
-    civil2.battleHistory.push(message.battleTie);
+  battleTie(rival) {
+    for (let i = 0; i < unitsTieBattle; i++) {
+      this.looseWeakestUnit();
+    }
+    this.battleHistory.push(message.battleTie + ` vs ${rival.type}`);
   }
 }
 

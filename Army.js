@@ -12,13 +12,13 @@ let armyDict = {
 };
 // message list
 let message = {
-  trainSucces: 'La unidad fue entrenada',
-  transformSucces: 'La unidad ha sido transformada',
-  transformFail: 'La unidad no puede ser transformada',
-  insufficientGold: 'Cantidad de oro insuficiente',
-  battleWin: 'Battalla ganada',
-  battleLose: 'Batalla perdida',
-  battleTie: 'Battalla empatada',
+  trainSucces: 'Unit trained successfully',
+  transformSucces: 'Unit transformed successfully',
+  transformFail: 'Unit can not be transformed',
+  insufficientGold: 'Insufficient Gold',
+  battleWin: 'Battle won',
+  battleLose: 'Battle lost',
+  battleTie: 'Battle tied',
 };
 // types of units available
 let units = ['lancer', 'archer', 'knight'];
@@ -36,16 +36,16 @@ class unit {
     this.transCost = unitDict[this.type][3];
     this.trainingPower = 0;
   }
-  // metod to calculate the total points of a single unit
+  // method to calculate the total points of a single unit
   totalPoints() {
     let points = this.bPoints + this.trainingPower;
     return points;
   }
-  // metod to train a unit
+  // method to train a unit
   train() {
     this.trainingPower += this.trainingPoints;
   }
-  // metod to transform a unit
+  // method to transform a unit
   transform() {
     if (this.type != units[units.length - 1]) {
       this.type = units[units.indexOf(this.type) + 1];
@@ -70,7 +70,7 @@ class civilization {
       }
     }
   }
-  // metod to train a unit based in his position in the army array
+  // method to train a unit based in his position in the army array
   unitTrain(unit) {
     if (this.gold >= this.army[unit].trainingCost) {
       this.gold -= this.army[unit].trainingCost;
@@ -78,7 +78,7 @@ class civilization {
       return message.trainSucces;
     } else return message.insufficientGold;
   }
-  // metod to transform a unit based in his position in the army array
+  // method to transform a unit based in his position in the army array
   unitTransform(unit) {
     if (this.gold >= this.army[unit].transCost) {
       this.gold -= this.army[unit].transCost;
@@ -87,13 +87,13 @@ class civilization {
       } else return message.transformFail;
     } else return message.insufficientGold;
   }
-  // metod to calculate the total power of the army
+  // method to calculate the total power of the army
   totalPower() {
     let power = 0;
     this.army.forEach((unit) => (power += unit.totalPoints()));
     return power;
   }
-  // metod to search the stronger unit in the army array and remove it
+  // method to search the stronger unit in the army array and remove it
   looseStrongerUnit() {
     let stronger = null;
     let maxPoints = 0;
@@ -105,7 +105,7 @@ class civilization {
     });
     this.army.splice(this.army.indexOf(stronger), 1);
   }
-  // metod to search the weakest unit in the army array and remove it
+  // method to search the weakest unit in the army array and remove it
   looseWeakestUnit() {
     let weakest = null;
     let minPoints = Number.MAX_VALUE;
@@ -117,7 +117,7 @@ class civilization {
     });
     this.army.splice(this.army.indexOf(weakest), 1);
   }
-  // metod in charge of the battle between civilizations
+  // method in charge of the battle between civilizations
   battle(defender) {
     if (this.totalPower() > defender.totalPower()) {
       this.battleWin(defender);

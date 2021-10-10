@@ -63,43 +63,21 @@ class unit {
     } else return false;
   }
 }
-// ------------------- CIVILIZATION CLASS AND HIS CORRESPONDING METHODS --------------------
-class civilization {
+// ------------------- ARMY CLASS AND HIS CORRESPONDING METHODS --------------------
+class army {
   constructor(type) {
     this.type = type;
-    this.gold = initialGold;
-    this.battleHistory = [];
-    this.army = [];
+    this.units = [];
     for (let i = 0; i < units.length; i++) {
       for (let j = 0; j < armyDict[this.type][i]; j++) {
-        this.army.push(new unit(units[i]));
+        this.units.push(new unit(units[i]));
       }
     }
-  }
-  // method to train a unit based in his position in the army array
-  unitTrain(unit) {
-    //verify if the the civilization have the gold required
-    if (this.gold >= this.army[unit].trainingCost) {
-      this.gold -= this.army[unit].trainingCost;
-      this.army[unit].train();
-      return message.trainSucces;
-    } else return message.insufficientGold;
-  }
-  // method to transform a unit based in his position in the army array
-  unitTransform(unit) {
-    //check if the civilization have the gold required
-    if (this.gold >= this.army[unit].transformCost) {
-      this.gold -= this.army[unit].transformCost;
-      //check if the transformation process was a success
-      if (this.army[unit].transform()) {
-        return message.transformSuccess;
-      } else return message.transformFail;
-    } else return message.insufficientGold;
   }
   // method to calculate the total power of the army
   totalPower() {
     let power = 0;
-    this.army.forEach((unit) => (power += unit.totalPoints()));
+    this.units.forEach((unit) => (power += unit.totalPoints()));
     return power;
   }
   // method to search the stronger unit in the army array and remove it
@@ -107,42 +85,80 @@ class civilization {
     for (let i = 0; i < unitsLostBattle; i++) {
       let stronger = null;
       let maxPoints = 0;
-      this.army.forEach((unit) => {
+      this.units.forEach((unit) => {
         if (unit.totalPoints() > maxPoints) {
           maxPoints = unit.totalPoints();
           stronger = unit;
         }
       });
-      this.army.splice(this.army.indexOf(stronger), 1);
+      this.units.splice(this.units.indexOf(stronger), 1);
     }
   }
-  // method to search the weakest unit in the army array and remove it
+  // method to search the weakest unit in the units array and remove it
   looseWeakestUnit() {
     for (let i = 0; i < unitsTieBattle; i++) {
       let weakest = null;
       let minPoints = Number.MAX_VALUE;
-      this.army.forEach((unit) => {
+      this.units.forEach((unit) => {
         if (unit.totalPoints() < minPoints) {
           weakest = unit;
           minPoints = unit.totalPoints();
         }
       });
-      this.army.splice(this.army.indexOf(weakest), 1);
+      this.units.splice(this.units.indexOf(weakest), 1);
     }
   }
+}
+// ------------------- CIVILIZATION CLASS AND HIS CORRESPONDING METHODS --------------------
+class civilization {
+  constructor(type) {
+    this.type = type;
+    this.gold = initialGold;
+    this.battleHistory = [];
+    this.armys = [];
+    this.armys.push(new army(this.type));
+  }
+  // method to create a new army in any civilization
+  createArmy() {
+    this.armys.push(new army(this.type));
+  }
+  // method to train a unit based in his position in the units array inside armys array Ex: civilization.unitTrain(0, 1)
+  unitTrain(army, unit) {
+    //verify if the the civilization have the gold required
+    if (this.gold >= this.armys[army].units[unit].trainingCost) {
+      this.gold -= this.armys[army].units[unit].trainingCost;
+      this.armys[army].units[unit].train();
+      return message.trainSucces;
+    } else return message.insufficientGold;
+  }
+  // method to transform a unit based in his position in the units array inside armys array Ex: civilization.unitTransform(0, 1)
+  unitTransform(army, unit) {
+    //check if the civilization have the gold required
+    if (this.gold >= this.armys[army].units[unit].transformCost) {
+      this.gold -= this.armys[army].units[unit].transformCost;
+      //check if the transformation process was a success
+      if (this.armys[army].units[unit].transform()) {
+        return message.transformSuccess;
+      } else return message.transformFail;
+    } else return message.insufficientGold;
+  }
   // method in charge of the battle between civilizations
-  battle(defender) {
-    if (this.totalPower() > defender.totalPower()) {
+  battle(army, defender, defenderArmy) {
+    if (
+      this.armys[army].totalPower() > defender.armys[defenderArmy].totalPower()
+    ) {
       this.battleWin(defender);
-      defender.battleLose(this);
+      defender.battleLose(defenderArmy, this);
       return message.battleWin;
-    } else if (this.totalPower() < defender.totalPower()) {
-      this.battleLose(defender);
+    } else if (
+      this.armys[army].totalPower() < defender.armys[defenderArmy].totalPower()
+    ) {
+      this.battleLose(army, defender);
       defender.battleWin(this);
       return message.battleLose;
     } else {
-      this.battleTie(defender);
-      defender.battleTie(this);
+      this.battleTie(defenderArmy, defender);
+      defender.battleTie(army, this);
       return message.battleTie;
     }
   }
@@ -153,14 +169,14 @@ class civilization {
     this.battleHistory.push(message.battleWin + ` vs ${rival.type}`);
   }
 
-  battleLose(rival) {
-    this.looseStrongerUnit();
+  battleLose(army, rival) {
+    this.armys[army].looseStrongerUnit();
 
     this.battleHistory.push(message.battleLose + ` vs ${rival.type}`);
   }
 
-  battleTie(rival) {
-    this.looseWeakestUnit();
+  battleTie(army, rival) {
+    this.armys[army].looseWeakestUnit();
 
     this.battleHistory.push(message.battleTie + ` vs ${rival.type}`);
   }
@@ -171,8 +187,5 @@ const a = new unit('archer');
 const k = new unit('knight');
 
 const c = new civilization('chinese');
-const c2 = new civilization('chinese');
 const e = new civilization('english');
-const e2 = new civilization('english');
 const b = new civilization('byzantines');
-const b2 = new civilization('byzantines');

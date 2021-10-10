@@ -22,6 +22,8 @@ let message = {
   battleLose: 'Battle lost',
   battleTie: 'Battle tied',
 };
+//starting gold amount
+let initialGold = 1000;
 // reward for wining a battle
 let reward = 100;
 // number of units lost in a lost and tie battle
@@ -63,7 +65,7 @@ class unit {
 class civilization {
   constructor(type) {
     this.type = type;
-    this.gold = 1000;
+    this.gold = initialGold;
     this.battleHistory = [];
     this.army = [];
     for (let i = 0; i < units.length; i++) {

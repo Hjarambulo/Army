@@ -104,7 +104,7 @@ class civilization {
 
   looseWeakestUnit() {
     let weakest = null;
-    let minPoints = 100;
+    let minPoints = Number.MAX_VALUE;
     this.army.forEach((unit) => {
       if (unit.totalPoints() < minPoints) {
         weakest = unit;

@@ -67,6 +67,7 @@ class unit {
 class army {
   constructor(type) {
     this.type = type;
+    this.battleHistory = [];
     this.units = [];
     for (let i = 0; i < units.length; i++) {
       for (let j = 0; j < armyDict[this.type][i]; j++) {
@@ -114,7 +115,6 @@ class civilization {
   constructor(type) {
     this.type = type;
     this.gold = initialGold;
-    this.battleHistory = [];
     this.armys = [];
     this.armys.push(new army(this.type));
   }
@@ -147,7 +147,7 @@ class civilization {
     if (
       this.armys[army].totalPower() > defender.armys[defenderArmy].totalPower()
     ) {
-      this.battleWin(defender);
+      this.battleWin(army, defender);
       defender.battleLose(defenderArmy, this);
       return message.battleWin;
     } else if (
@@ -163,22 +163,28 @@ class civilization {
     }
   }
   // methods to control the result effects of the battle
-  battleWin(rival) {
+  battleWin(army, rival) {
     this.gold += reward;
 
-    this.battleHistory.push(message.battleWin + ` vs ${rival.type}`);
+    this.armys[army].battleHistory.push(
+      message.battleWin + ` vs ${rival.type}`
+    );
   }
 
   battleLose(army, rival) {
     this.armys[army].looseStrongerUnit();
 
-    this.battleHistory.push(message.battleLose + ` vs ${rival.type}`);
+    this.armys[army].battleHistory.push(
+      message.battleLose + ` vs ${rival.type}`
+    );
   }
 
   battleTie(army, rival) {
     this.armys[army].looseWeakestUnit();
 
-    this.battleHistory.push(message.battleTie + ` vs ${rival.type}`);
+    this.armys[army].battleHistory.push(
+      message.battleTie + ` vs ${rival.type}`
+    );
   }
 }
 // ------------------- CONSTANTS FOR TESTS IN CONSOLE --------------------

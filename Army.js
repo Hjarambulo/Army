@@ -104,27 +104,31 @@ class civilization {
   }
   // method to search the stronger unit in the army array and remove it
   looseStrongerUnit() {
-    let stronger = null;
-    let maxPoints = 0;
-    this.army.forEach((unit) => {
-      if (unit.totalPoints() > maxPoints) {
-        maxPoints = unit.totalPoints();
-        stronger = unit;
-      }
-    });
-    this.army.splice(this.army.indexOf(stronger), 1);
+    for (let i = 0; i < unitsLostBattle; i++) {
+      let stronger = null;
+      let maxPoints = 0;
+      this.army.forEach((unit) => {
+        if (unit.totalPoints() > maxPoints) {
+          maxPoints = unit.totalPoints();
+          stronger = unit;
+        }
+      });
+      this.army.splice(this.army.indexOf(stronger), 1);
+    }
   }
   // method to search the weakest unit in the army array and remove it
   looseWeakestUnit() {
-    let weakest = null;
-    let minPoints = Number.MAX_VALUE;
-    this.army.forEach((unit) => {
-      if (unit.totalPoints() < minPoints) {
-        weakest = unit;
-        minPoints = unit.totalPoints();
-      }
-    });
-    this.army.splice(this.army.indexOf(weakest), 1);
+    for (let i = 0; i < unitsTieBattle; i++) {
+      let weakest = null;
+      let minPoints = Number.MAX_VALUE;
+      this.army.forEach((unit) => {
+        if (unit.totalPoints() < minPoints) {
+          weakest = unit;
+          minPoints = unit.totalPoints();
+        }
+      });
+      this.army.splice(this.army.indexOf(weakest), 1);
+    }
   }
   // method in charge of the battle between civilizations
   battle(defender) {
@@ -145,20 +149,19 @@ class civilization {
   // methods to control the result effects of the battle
   battleWin(rival) {
     this.gold += reward;
+
     this.battleHistory.push(message.battleWin + ` vs ${rival.type}`);
   }
 
   battleLose(rival) {
-    for (let i = 0; i < unitsLostBattle; i++) {
-      this.looseStrongerUnit();
-    }
+    this.looseStrongerUnit();
+
     this.battleHistory.push(message.battleLose + ` vs ${rival.type}`);
   }
 
   battleTie(rival) {
-    for (let i = 0; i < unitsTieBattle; i++) {
-      this.looseWeakestUnit();
-    }
+    this.looseWeakestUnit();
+
     this.battleHistory.push(message.battleTie + ` vs ${rival.type}`);
   }
 }

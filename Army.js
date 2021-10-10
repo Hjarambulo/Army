@@ -1,3 +1,5 @@
+// types of units available
+let units = ['lancer', 'archer', 'knight'];
 //dictionary unit type: [basePoints, trainingCost, trainingPoints, transformationCost]
 let unitDict = {
   lancer: [5, 10, 3, 30],
@@ -20,8 +22,8 @@ let message = {
   battleLose: 'Battle lost',
   battleTie: 'Battle tied',
 };
-// types of units available
-let units = ['lancer', 'archer', 'knight'];
+// reward for wining a battle
+let reward = 100;
 // number of units lost in a lost and tie battle
 let unitsLostBattle = 2;
 
@@ -122,17 +124,20 @@ class civilization {
     if (this.totalPower() > defender.totalPower()) {
       this.battleWin(defender);
       defender.battleLose(this);
+      return message.battleWin;
     } else if (this.totalPower() < defender.totalPower()) {
       this.battleLose(defender);
       defender.battleWin(this);
+      return message.battleLose;
     } else {
       this.battleTie(defender);
       defender.battleTie(this);
+      return message.battleTie;
     }
   }
 
   battleWin(rival) {
-    this.gold += 100;
+    this.gold += reward;
     this.battleHistory.push(message.battleWin + ` vs ${rival.type}`);
   }
 

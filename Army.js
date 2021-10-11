@@ -1,13 +1,13 @@
 // ------------------- VARIABLES OF CONTROL --------------------
 // types of units available
-let units = ['lancer', 'archer', 'knight'];
+let units = ['pikeman', 'archer', 'knight'];
 //dictionary unit type: [basePoints, trainingCost, trainingPoints, transformCost]
 let unitDict = {
-  lancer: [5, 10, 3, 30],
+  pikeman: [5, 10, 3, 30],
   archer: [10, 20, 7, 40],
   knight: [20, 30, 10, 0],
 };
-//dictionary army type: [number of lancers, archers and knights]
+//dictionary army type: [number of pikemans, archers and knights]
 let armyDict = {
   chinese: [2, 25, 2],
   english: [10, 10, 10],
@@ -63,7 +63,7 @@ class unit {
     } else return false;
   }
 }
-// ------------------- army CLASS AND HIS CORRESPONDING METHODS --------------------
+// ------------------- ARMY CLASS AND HIS CORRESPONDING METHODS --------------------
 class army {
   constructor(type) {
     this.civilization = type;
@@ -77,6 +77,7 @@ class army {
     }
   }
   // method to train a unit based in his position in units array
+  // Ex: army.unitTrain(0) train the unit in the 0 position.
   unitTrain(unit) {
     //verify if the units have the gold required
     if (this.gold >= this.units[unit].trainingCost) {
@@ -86,6 +87,7 @@ class army {
     } else return message.insufficientGold;
   }
   // method to transform a unit based in his position in units array
+  //  Ex: army.unitTransform(0) transforms the unit in the 0 position.
   unitTransform(unit) {
     //check if units have the gold required
     if (this.gold >= this.units[unit].transformCost) {
@@ -130,7 +132,7 @@ class army {
       this.units.splice(this.units.indexOf(weakest), 1);
     }
   }
-  // method in charge of the battle between armys
+  // method in charge of the battle between armys Ex: army.battle(army2).
   battle(defender) {
     if (this.totalPower() > defender.totalPower()) {
       this.battleWin(defender);
@@ -166,7 +168,7 @@ class army {
   }
 }
 // ------------------- CONSTANTS FOR TESTS IN CONSOLE --------------------
-const l = new unit('lancer');
+const l = new unit('pikeman');
 const a = new unit('archer');
 const k = new unit('knight');
 

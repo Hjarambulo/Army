@@ -115,8 +115,7 @@ class civilization {
   constructor(type) {
     this.type = type;
     this.gold = initialGold;
-    this.armys = [];
-    this.armys.push(new army(this.type));
+    this.armys = [new army(this.type)];
   }
   // method to create a new army in any civilization
   createArmy() {
